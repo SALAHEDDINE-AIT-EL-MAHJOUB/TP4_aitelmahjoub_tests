@@ -1,5 +1,6 @@
 package ma.emsi.aitelmahjoub.test1;
 
+
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
@@ -16,29 +17,36 @@ import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import ma.emsi.aitelmahjoub.assistant.Assistant;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.ConsoleHandler;
 public class RagNaif {
 
+    
     private static void configureLogger() {
+        // Configure the underlying java.util.logging logger used by langchain4j
         Logger packageLogger = Logger.getLogger("dev.langchain4j");
         packageLogger.setLevel(Level.FINE);
+
+        // Console handler so logs appear in console
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(Level.FINE);
         packageLogger.addHandler(handler);
     }
 
     public static void main(String[] args) {
+        // configure logger early so LangChain4j logs (requests/responses) are shown
+        configureLogger();
         try {
             /**
              * Phase 1 : Enregistrement des embeddings
-              */
+             */
 
             System.out.println("=== Phase 1 : Enregistrement des embeddings ===");
 
@@ -78,7 +86,7 @@ public class RagNaif {
 
             System.out.println("\n-------- Phase 2 : Configuration de l'assistant RAG ");
 
-        // Création du ChatModel
+        // Création du ChatModel (logging des requêtes/réponses activé)
         ChatModel model = GoogleAiGeminiChatModel.builder()
             .apiKey(System.getenv("GeminiKey"))
             .modelName("gemini-2.5-flash")
@@ -86,23 +94,23 @@ public class RagNaif {
             .temperature(0.2)
             .build();
 
-        // Création du ContentRetriever avec EmbeddingStoreContentRetriever (builder)
-        EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
-            .embeddingStore(embeddingStore)
-            .embeddingModel(embeddingModel)
-            .maxResults(3)
-            .minScore(0.7)
-            .build();
+            // Création du ContentRetriever avec EmbeddingStoreContentRetriever (builder)
+            EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
+                    .embeddingStore(embeddingStore)
+                    .embeddingModel(embeddingModel)
+                    .maxResults(3)
+                    .minScore(0.7)
+                    .build();
 
-        // Ajout d'une mémoire pour 10 messages
-        MessageWindowChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
+            // Ajout d'une mémoire pour 10 messages
+            MessageWindowChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
 
-        // Création de l'assistant via AiServices
-        Assistant assistant = AiServices.builder(Assistant.class)
-            .chatModel(model)
-            .chatMemory(chatMemory)
-            .contentRetriever(retriever)
-            .build();
+            // Création de l'assistant via AiServices
+            Assistant assistant = AiServices.builder(Assistant.class)
+                    .chatModel(model)
+                    .chatMemory(chatMemory)
+                    .contentRetriever(retriever)
+                    .build();
 
 
             System.out.println("Assistant  configuré avec succès!");
