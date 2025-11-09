@@ -70,13 +70,6 @@ public class PasDeRag {
                 .minScore(0.5)
                 .build();
 
-        // 6️ Création de la classe interne : routage basé sur une question posée au LM
-        // Ici nous utilisons le même ChatModel, mais pour interroger le modèle
-        // directement nous construisons un petit Assistant local (via AiServices)
-        // qui n'utilise pas de RetrievalAugmentor. Le QueryRouter pose la question
-        // suivante au modèle :
-        // "Est-ce que la requête '...query...' porte sur l'IA ? Réponds seulement par 'oui', 'non' ou 'peut-être'."
-        // Si la réponse est 'non' -> on renvoie une liste vide, sinon on renvoie le retriever.
         class QueryRouterBaséSurLM implements QueryRouter {
 
             private final ma.emsi.aitelmahjoub.assistant.Assistant lmAssistant;
