@@ -26,7 +26,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Routage {
+public class TestRoutage {
 
     private static void configureLogger() {
         System.out.println("Configuring logger");
@@ -90,8 +90,6 @@ public class Routage {
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
                 .retrievalAugmentor(augmentor)
                 .build();
-
-
 
         Scanner sc = new Scanner(System.in);
         while (true) {
